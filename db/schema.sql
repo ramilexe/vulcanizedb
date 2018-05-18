@@ -2,15 +2,14 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.3
--- Dumped by pg_dump version 10.3
+-- Dumped from database version 10.0
+-- Dumped by pg_dump version 10.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
@@ -29,15 +28,31 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+SET search_path = public, pg_catalog;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
+-- Name: activities; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE activities (
+    trackable_type character varying,
+    action character varying,
+    recipient_id integer,
+    recipient_type character varying,
+    metadata text,
+    created_at timestamp without time zone
+);
+
+
+--
 -- Name: logs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.logs (
+CREATE TABLE logs (
     id integer NOT NULL,
     block_number bigint,
     address character varying(66),
@@ -56,17 +71,17 @@ CREATE TABLE public.logs (
 -- Name: block_stats; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.block_stats AS
+CREATE VIEW block_stats AS
  SELECT max(logs.block_number) AS max_block,
     min(logs.block_number) AS min_block
-   FROM public.logs;
+   FROM logs;
 
 
 --
 -- Name: blocks; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.blocks (
+CREATE TABLE blocks (
     number bigint,
     gaslimit bigint,
     gasused bigint,
@@ -91,7 +106,7 @@ CREATE TABLE public.blocks (
 -- Name: blocks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.blocks_id_seq
+CREATE SEQUENCE blocks_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -104,14 +119,14 @@ CREATE SEQUENCE public.blocks_id_seq
 -- Name: blocks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.blocks_id_seq OWNED BY public.blocks.id;
+ALTER SEQUENCE blocks_id_seq OWNED BY blocks.id;
 
 
 --
 -- Name: eth_nodes; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.eth_nodes (
+CREATE TABLE eth_nodes (
     id integer NOT NULL,
     genesis_block character varying(66),
     network_id numeric,
@@ -124,7 +139,7 @@ CREATE TABLE public.eth_nodes (
 -- Name: log_filters; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.log_filters (
+CREATE TABLE log_filters (
     id integer NOT NULL,
     name character varying NOT NULL,
     from_block bigint,
@@ -144,7 +159,7 @@ CREATE TABLE public.log_filters (
 -- Name: log_filters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.log_filters_id_seq
+CREATE SEQUENCE log_filters_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -157,14 +172,14 @@ CREATE SEQUENCE public.log_filters_id_seq
 -- Name: log_filters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.log_filters_id_seq OWNED BY public.log_filters.id;
+ALTER SEQUENCE log_filters_id_seq OWNED BY log_filters.id;
 
 
 --
 -- Name: logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.logs_id_seq
+CREATE SEQUENCE logs_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -177,14 +192,14 @@ CREATE SEQUENCE public.logs_id_seq
 -- Name: logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.logs_id_seq OWNED BY public.logs.id;
+ALTER SEQUENCE logs_id_seq OWNED BY logs.id;
 
 
 --
 -- Name: nodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.nodes_id_seq
+CREATE SEQUENCE nodes_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -197,14 +212,14 @@ CREATE SEQUENCE public.nodes_id_seq
 -- Name: nodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.nodes_id_seq OWNED BY public.eth_nodes.id;
+ALTER SEQUENCE nodes_id_seq OWNED BY eth_nodes.id;
 
 
 --
 -- Name: receipts; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.receipts (
+CREATE TABLE receipts (
     id integer NOT NULL,
     transaction_id integer NOT NULL,
     contract_address character varying(42),
@@ -220,7 +235,7 @@ CREATE TABLE public.receipts (
 -- Name: receipts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.receipts_id_seq
+CREATE SEQUENCE receipts_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -233,14 +248,14 @@ CREATE SEQUENCE public.receipts_id_seq
 -- Name: receipts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.receipts_id_seq OWNED BY public.receipts.id;
+ALTER SEQUENCE receipts_id_seq OWNED BY receipts.id;
 
 
 --
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.schema_migrations (
+CREATE TABLE schema_migrations (
     version bigint NOT NULL,
     dirty boolean NOT NULL
 );
@@ -250,7 +265,7 @@ CREATE TABLE public.schema_migrations (
 -- Name: transactions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.transactions (
+CREATE TABLE transactions (
     id integer NOT NULL,
     hash character varying(66),
     nonce numeric,
@@ -268,7 +283,7 @@ CREATE TABLE public.transactions (
 -- Name: transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.transactions_id_seq
+CREATE SEQUENCE transactions_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -281,14 +296,14 @@ CREATE SEQUENCE public.transactions_id_seq
 -- Name: transactions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.transactions_id_seq OWNED BY public.transactions.id;
+ALTER SEQUENCE transactions_id_seq OWNED BY transactions.id;
 
 
 --
 -- Name: watched_contracts; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.watched_contracts (
+CREATE TABLE watched_contracts (
     contract_id integer NOT NULL,
     contract_hash character varying(66),
     contract_abi json
@@ -299,7 +314,7 @@ CREATE TABLE public.watched_contracts (
 -- Name: watched_contracts_contract_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.watched_contracts_contract_id_seq
+CREATE SEQUENCE watched_contracts_contract_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -312,14 +327,14 @@ CREATE SEQUENCE public.watched_contracts_contract_id_seq
 -- Name: watched_contracts_contract_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.watched_contracts_contract_id_seq OWNED BY public.watched_contracts.contract_id;
+ALTER SEQUENCE watched_contracts_contract_id_seq OWNED BY watched_contracts.contract_id;
 
 
 --
 -- Name: watched_event_logs; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.watched_event_logs AS
+CREATE VIEW watched_event_logs AS
  SELECT log_filters.name,
     logs.id,
     logs.block_number,
@@ -332,9 +347,9 @@ CREATE VIEW public.watched_event_logs AS
     logs.topic3,
     logs.data,
     logs.receipt_id
-   FROM ((public.log_filters
-     CROSS JOIN public.block_stats)
-     JOIN public.logs ON ((((logs.address)::text = (log_filters.address)::text) AND (logs.block_number >= COALESCE(log_filters.from_block, block_stats.min_block)) AND (logs.block_number <= COALESCE(log_filters.to_block, block_stats.max_block)))))
+   FROM ((log_filters
+     CROSS JOIN block_stats)
+     JOIN logs ON ((((logs.address)::text = (log_filters.address)::text) AND (logs.block_number >= COALESCE(log_filters.from_block, block_stats.min_block)) AND (logs.block_number <= COALESCE(log_filters.to_block, block_stats.max_block)))))
   WHERE ((((log_filters.topic0)::text = (logs.topic0)::text) OR (log_filters.topic0 IS NULL)) AND (((log_filters.topic1)::text = (logs.topic1)::text) OR (log_filters.topic1 IS NULL)) AND (((log_filters.topic2)::text = (logs.topic2)::text) OR (log_filters.topic2 IS NULL)) AND (((log_filters.topic3)::text = (logs.topic3)::text) OR (log_filters.topic3 IS NULL)));
 
 
@@ -342,56 +357,56 @@ CREATE VIEW public.watched_event_logs AS
 -- Name: blocks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.blocks ALTER COLUMN id SET DEFAULT nextval('public.blocks_id_seq'::regclass);
+ALTER TABLE ONLY blocks ALTER COLUMN id SET DEFAULT nextval('blocks_id_seq'::regclass);
 
 
 --
 -- Name: eth_nodes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.eth_nodes ALTER COLUMN id SET DEFAULT nextval('public.nodes_id_seq'::regclass);
+ALTER TABLE ONLY eth_nodes ALTER COLUMN id SET DEFAULT nextval('nodes_id_seq'::regclass);
 
 
 --
 -- Name: log_filters id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.log_filters ALTER COLUMN id SET DEFAULT nextval('public.log_filters_id_seq'::regclass);
+ALTER TABLE ONLY log_filters ALTER COLUMN id SET DEFAULT nextval('log_filters_id_seq'::regclass);
 
 
 --
 -- Name: logs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.logs ALTER COLUMN id SET DEFAULT nextval('public.logs_id_seq'::regclass);
+ALTER TABLE ONLY logs ALTER COLUMN id SET DEFAULT nextval('logs_id_seq'::regclass);
 
 
 --
 -- Name: receipts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.receipts ALTER COLUMN id SET DEFAULT nextval('public.receipts_id_seq'::regclass);
+ALTER TABLE ONLY receipts ALTER COLUMN id SET DEFAULT nextval('receipts_id_seq'::regclass);
 
 
 --
 -- Name: transactions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.transactions ALTER COLUMN id SET DEFAULT nextval('public.transactions_id_seq'::regclass);
+ALTER TABLE ONLY transactions ALTER COLUMN id SET DEFAULT nextval('transactions_id_seq'::regclass);
 
 
 --
 -- Name: watched_contracts contract_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.watched_contracts ALTER COLUMN contract_id SET DEFAULT nextval('public.watched_contracts_contract_id_seq'::regclass);
+ALTER TABLE ONLY watched_contracts ALTER COLUMN contract_id SET DEFAULT nextval('watched_contracts_contract_id_seq'::regclass);
 
 
 --
 -- Name: blocks blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.blocks
+ALTER TABLE ONLY blocks
     ADD CONSTRAINT blocks_pkey PRIMARY KEY (id);
 
 
@@ -399,7 +414,7 @@ ALTER TABLE ONLY public.blocks
 -- Name: watched_contracts contract_hash_uc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.watched_contracts
+ALTER TABLE ONLY watched_contracts
     ADD CONSTRAINT contract_hash_uc UNIQUE (contract_hash);
 
 
@@ -407,7 +422,7 @@ ALTER TABLE ONLY public.watched_contracts
 -- Name: blocks eth_node_id_block_number_uc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.blocks
+ALTER TABLE ONLY blocks
     ADD CONSTRAINT eth_node_id_block_number_uc UNIQUE (number, eth_node_id);
 
 
@@ -415,7 +430,7 @@ ALTER TABLE ONLY public.blocks
 -- Name: eth_nodes eth_node_uc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.eth_nodes
+ALTER TABLE ONLY eth_nodes
     ADD CONSTRAINT eth_node_uc UNIQUE (genesis_block, network_id, eth_node_id);
 
 
@@ -423,7 +438,7 @@ ALTER TABLE ONLY public.eth_nodes
 -- Name: logs logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.logs
+ALTER TABLE ONLY logs
     ADD CONSTRAINT logs_pkey PRIMARY KEY (id);
 
 
@@ -431,7 +446,7 @@ ALTER TABLE ONLY public.logs
 -- Name: log_filters name_uc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.log_filters
+ALTER TABLE ONLY log_filters
     ADD CONSTRAINT name_uc UNIQUE (name);
 
 
@@ -439,7 +454,7 @@ ALTER TABLE ONLY public.log_filters
 -- Name: eth_nodes nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.eth_nodes
+ALTER TABLE ONLY eth_nodes
     ADD CONSTRAINT nodes_pkey PRIMARY KEY (id);
 
 
@@ -447,7 +462,7 @@ ALTER TABLE ONLY public.eth_nodes
 -- Name: receipts receipts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.receipts
+ALTER TABLE ONLY receipts
     ADD CONSTRAINT receipts_pkey PRIMARY KEY (id);
 
 
@@ -455,7 +470,7 @@ ALTER TABLE ONLY public.receipts
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.schema_migrations
+ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
 
@@ -463,7 +478,7 @@ ALTER TABLE ONLY public.schema_migrations
 -- Name: transactions transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.transactions
+ALTER TABLE ONLY transactions
     ADD CONSTRAINT transactions_pkey PRIMARY KEY (id);
 
 
@@ -471,7 +486,7 @@ ALTER TABLE ONLY public.transactions
 -- Name: watched_contracts watched_contracts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.watched_contracts
+ALTER TABLE ONLY watched_contracts
     ADD CONSTRAINT watched_contracts_pkey PRIMARY KEY (contract_id);
 
 
@@ -479,74 +494,74 @@ ALTER TABLE ONLY public.watched_contracts
 -- Name: block_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX block_id_index ON public.transactions USING btree (block_id);
+CREATE INDEX block_id_index ON transactions USING btree (block_id);
 
 
 --
 -- Name: block_number_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX block_number_index ON public.blocks USING btree (number);
+CREATE INDEX block_number_index ON blocks USING btree (number);
 
 
 --
 -- Name: node_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX node_id_index ON public.blocks USING btree (eth_node_id);
+CREATE INDEX node_id_index ON blocks USING btree (eth_node_id);
 
 
 --
 -- Name: transaction_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX transaction_id_index ON public.receipts USING btree (transaction_id);
+CREATE INDEX transaction_id_index ON receipts USING btree (transaction_id);
 
 
 --
 -- Name: tx_from_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX tx_from_index ON public.transactions USING btree (tx_from);
+CREATE INDEX tx_from_index ON transactions USING btree (tx_from);
 
 
 --
 -- Name: tx_to_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX tx_to_index ON public.transactions USING btree (tx_to);
+CREATE INDEX tx_to_index ON transactions USING btree (tx_to);
 
 
 --
 -- Name: transactions blocks_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.transactions
-    ADD CONSTRAINT blocks_fk FOREIGN KEY (block_id) REFERENCES public.blocks(id) ON DELETE CASCADE;
+ALTER TABLE ONLY transactions
+    ADD CONSTRAINT blocks_fk FOREIGN KEY (block_id) REFERENCES blocks(id) ON DELETE CASCADE;
 
 
 --
 -- Name: blocks node_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.blocks
-    ADD CONSTRAINT node_fk FOREIGN KEY (eth_node_id) REFERENCES public.eth_nodes(id) ON DELETE CASCADE;
+ALTER TABLE ONLY blocks
+    ADD CONSTRAINT node_fk FOREIGN KEY (eth_node_id) REFERENCES eth_nodes(id) ON DELETE CASCADE;
 
 
 --
 -- Name: logs receipts_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.logs
-    ADD CONSTRAINT receipts_fk FOREIGN KEY (receipt_id) REFERENCES public.receipts(id) ON DELETE CASCADE;
+ALTER TABLE ONLY logs
+    ADD CONSTRAINT receipts_fk FOREIGN KEY (receipt_id) REFERENCES receipts(id) ON DELETE CASCADE;
 
 
 --
 -- Name: receipts transaction_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.receipts
-    ADD CONSTRAINT transaction_fk FOREIGN KEY (transaction_id) REFERENCES public.transactions(id) ON DELETE CASCADE;
+ALTER TABLE ONLY receipts
+    ADD CONSTRAINT transaction_fk FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE CASCADE;
 
 
 --

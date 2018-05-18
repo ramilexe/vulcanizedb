@@ -30,7 +30,6 @@ func ToCoreBlock(gethBlock *types.Block, client Client) (core.Block, error) {
 		GasUsed:      gethBlock.GasUsed(),
 		Hash:         gethBlock.Hash().Hex(),
 		Miner:        strings.ToLower(gethBlock.Coinbase().Hex()),
-		Nonce:        hexutil.Encode(gethBlock.Header().Nonce[:]),
 		Number:       gethBlock.Number().Int64(),
 		ParentHash:   gethBlock.ParentHash().Hex(),
 		Size:         gethBlock.Size().String(),
